@@ -17,6 +17,10 @@ const scrollProgress = ref(0)
 const activeGallery = ref(0)
 const lightboxOpen = ref(false)
 
+function asset(path) {
+  return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`
+}
+
 const vReveal = {
   mounted(el, binding) {
     el.classList.add('reveal')
@@ -254,7 +258,7 @@ onUnmounted(() => {
 
     <main v-if="route === 'home'">
       <section class="hero" :style="{ '--hero-y': `${scrollY * 0.14}px` }">
-        <img src="/images/hero.jpeg" alt="Luxury pool and outdoor living space in San Diego" />
+        <img :src="asset('/images/hero.jpeg')" alt="Luxury pool and outdoor living space in San Diego" />
         <div class="hero-shade"></div>
         <div class="hero-grid" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
         <div class="hero-content">
@@ -289,7 +293,7 @@ onUnmounted(() => {
       <section class="transformation">
         <div class="transformation-visual">
           <Transition name="stage" mode="out-in">
-            <img :key="activeStage" :src="transformationStages[activeStage].image" :alt="transformationStages[activeStage].title" />
+            <img :key="activeStage" :src="asset(transformationStages[activeStage].image)" :alt="transformationStages[activeStage].title" />
           </Transition>
           <div class="design-scan" aria-hidden="true"></div>
           <div class="plan-overlay" aria-hidden="true">
@@ -348,7 +352,7 @@ onUnmounted(() => {
         <div class="service-list">
           <article v-for="(service, i) in services" :key="service.title" class="service-row" v-reveal="i * 70">
             <span class="service-number">{{ service.number }}</span>
-            <div class="service-image"><img :src="service.image" :alt="service.title" /></div>
+            <div class="service-image"><img :src="asset(service.image)" :alt="service.title" /></div>
             <div class="service-copy">
               <h3>{{ service.title }}</h3>
               <p class="service-subtitle">{{ service.subtitle }}</p>
@@ -378,7 +382,7 @@ onUnmounted(() => {
         </div>
         <div class="featured-image">
           <Transition name="project" mode="out-in">
-            <img :key="currentProject" :src="projects[currentProject].image" :alt="projects[currentProject].name" />
+            <img :key="currentProject" :src="asset(projects[currentProject].image)" :alt="projects[currentProject].name" />
           </Transition>
           <button class="image-action" @click="go('projects')">View all projects <ArrowUpRight :size="17" /></button>
         </div>
@@ -398,7 +402,7 @@ onUnmounted(() => {
         </div>
         <div class="article-grid">
           <article v-for="(article, i) in journal" :key="article.title" v-reveal="i * 100">
-            <div class="article-image"><img :src="article.image" :alt="article.title" /><ArrowUpRight /></div>
+            <div class="article-image"><img :src="asset(article.image)" :alt="article.title" /><ArrowUpRight /></div>
             <p>{{ article.category }} · {{ article.date }}</p>
             <h3>{{ article.title }}</h3>
           </article>
@@ -424,7 +428,7 @@ onUnmounted(() => {
             @click="openProject(project)"
             @keydown.enter="openProject(project)"
           >
-            <div><img :src="project.image" :alt="project.name" /><span>0{{ i + 1 }}</span></div>
+            <div><img :src="asset(project.image)" :alt="project.name" /><span>0{{ i + 1 }}</span></div>
             <p>{{ project.type }}</p><h2>{{ project.name }} <ArrowUpRight :size="20" /></h2><small>{{ project.place }}</small>
           </article>
         </div>
@@ -444,7 +448,7 @@ onUnmounted(() => {
         <div class="project-carousel">
           <Transition name="gallery" mode="out-in">
             <button :key="activeGallery" class="carousel-image" aria-label="Open fullscreen gallery" @click="lightboxOpen = true">
-              <img :src="selectedProject.gallery[activeGallery]" :alt="`${selectedProject.name}, image ${activeGallery + 1}`" />
+              <img :src="asset(selectedProject.gallery[activeGallery])" :alt="`${selectedProject.name}, image ${activeGallery + 1}`" />
               <span><Plus :size="16" /> View fullscreen</span>
             </button>
           </Transition>
@@ -488,7 +492,7 @@ onUnmounted(() => {
               :class="{ active: activeGallery === i }"
               @click="activeGallery = i"
             >
-              <img :src="image" :alt="`${selectedProject.name} view ${i + 1}`" />
+              <img :src="asset(image)" :alt="`${selectedProject.name} view ${i + 1}`" />
               <span>0{{ i + 1 }}</span>
             </button>
           </div>
@@ -529,7 +533,7 @@ onUnmounted(() => {
       <section v-if="route === 'journal'" class="journal-page section">
         <div class="article-grid">
           <article v-for="(article, i) in [...journal, ...journal]" :key="i">
-            <div class="article-image"><img :src="article.image" :alt="article.title" /><ArrowUpRight /></div>
+            <div class="article-image"><img :src="asset(article.image)" :alt="article.title" /><ArrowUpRight /></div>
             <p>{{ article.category }} · {{ article.date }}</p>
             <h3>{{ i > 2 ? ['The seven elements of a luxury backyard in San Diego', 'Why your pool needs a water feature', 'How to design a backyard around the way you live'][i - 3] : article.title }}</h3>
           </article>
@@ -565,7 +569,7 @@ onUnmounted(() => {
     </section>
 
     <section class="closing">
-      <img src="/images/project-rancho.png" alt="Luxury backyard in Rancho Santa Fe" />
+      <img :src="asset('/images/project-rancho.png')" alt="Luxury backyard in Rancho Santa Fe" />
       <div class="closing-shade"></div>
       <div>
         <p class="eyebrow light">Your home. Reimagined outdoors.</p>
@@ -615,13 +619,13 @@ onUnmounted(() => {
           <button aria-label="Close gallery" @click="lightboxOpen = false"><X /></button>
         </div>
         <Transition name="gallery" mode="out-in">
-          <img :key="activeGallery" :src="selectedProject.gallery[activeGallery]" :alt="selectedProject.name" />
+          <img :key="activeGallery" :src="asset(selectedProject.gallery[activeGallery])" :alt="selectedProject.name" />
         </Transition>
         <button class="lightbox-prev" aria-label="Previous image" @click="nextGallery(-1)"><ArrowLeft /></button>
         <button class="lightbox-next" aria-label="Next image" @click="nextGallery(1)"><ArrowRight /></button>
         <div class="lightbox-strip">
           <button v-for="(image, i) in selectedProject.gallery" :key="image" :class="{ active: activeGallery === i }" @click="activeGallery = i">
-            <img :src="image" alt="" />
+            <img :src="asset(image)" alt="" />
           </button>
         </div>
       </div>
