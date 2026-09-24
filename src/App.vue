@@ -14,6 +14,8 @@ const currentProject = ref(0)
 const activeStage = ref(0)
 const scrollY = ref(0)
 const scrollProgress = ref(0)
+const activeGallery = ref(0)
+const lightboxOpen = ref(false)
 
 const vReveal = {
   mounted(el, binding) {
@@ -37,12 +39,62 @@ const services = [
 ]
 
 const projects = [
-  { name: 'La Jolla Modern Haven', place: 'La Jolla, California', type: 'Pool · Fire · Wellness', image: '/images/project-la-jolla.png', detail: 'Infinity-edge pool, fire lounge and wellness deck.' },
-  { name: 'Del Mar Coastal Retreat', place: 'Del Mar, California', type: 'Landscape · Sauna', image: '/images/project-del-mar.webp', detail: 'A coastal landscape with a private sauna retreat.' },
-  { name: 'Rancho Santa Fe Legacy', place: 'Rancho Santa Fe, California', type: 'Pool · Outdoor Living', image: '/images/project-rancho.png', detail: 'A Mediterranean-inspired outdoor resort.' },
-  { name: 'San Marcos Dream Yard', place: 'San Marcos, California', type: 'Pool · Kitchen · Fire', image: '/images/project-san-marcos.webp', detail: 'Stunning pool and spa, outdoor kitchen and fire pit.' },
-  { name: 'Coronado Oceanfront', place: 'Coronado, California', type: 'Coastal Outdoor Living', image: '/images/project-coronado.webp', detail: 'Elevated coastal outdoor design.' },
-  { name: 'Scripps Ranch Resort', place: 'Scripps Ranch, California', type: 'Family · Pool', image: '/images/project-scripps.webp', detail: 'A resort-style family backyard with a custom waterslide.' },
+  {
+    slug: 'la-jolla-modern-haven', name: 'La Jolla Modern Haven', place: 'La Jolla, California', type: 'Pool · Fire · Wellness',
+    image: '/images/project-la-jolla.png', detail: 'Infinity-edge pool, fire lounge and wellness deck.',
+    story: 'A private hillside resort shaped around open views, architectural water and unhurried evenings. Every edge was designed to make the home and horizon feel like one continuous experience.',
+    scope: ['Infinity-edge pool', 'Integrated spa', 'Fire lounge', 'Wellness deck'],
+    gallery: ['/images/project-la-jolla.png', '/images/service-pool.webp', '/images/project-rancho.png', '/images/service-wellness.webp']
+  },
+  {
+    slug: 'del-mar-coastal-retreat', name: 'Del Mar Coastal Retreat', place: 'Del Mar, California', type: 'Landscape · Sauna',
+    image: '/images/project-del-mar.webp', detail: 'A coastal landscape with a private sauna retreat.',
+    story: 'A calm coastal garden where wellness is woven into the landscape. Soft planting, warm timber and secluded recovery spaces turn an overlooked yard into a daily ritual.',
+    scope: ['Private sauna', 'Cold plunge', 'Coastal planting', 'Relaxation deck'],
+    gallery: ['/images/project-del-mar.webp', '/images/service-wellness.webp', '/images/service-outdoor.webp', '/images/project-coronado.webp']
+  },
+  {
+    slug: 'rancho-santa-fe-legacy', name: 'Rancho Santa Fe Legacy', place: 'Rancho Santa Fe, California', type: 'Pool · Outdoor Living',
+    image: '/images/project-rancho.png', detail: 'A Mediterranean-inspired outdoor resort.',
+    story: 'Designed for an estate that brings generations together, this expansive retreat balances classic Mediterranean character with the ease of modern outdoor living.',
+    scope: ['Custom pool & spa', 'Dining pavilion', 'Fire features', 'Estate landscape'],
+    gallery: Array.from({ length: 6 }, (_, i) => `/images/rancho-${i + 1}.webp`)
+  },
+  {
+    slug: 'san-marcos-dream-yard', name: 'San Marcos Dream Yard', place: 'San Marcos, California', type: 'Pool · Kitchen · Fire',
+    image: '/images/project-san-marcos.webp', detail: 'Stunning pool and spa, outdoor kitchen and fire pit.',
+    story: 'A complete family retreat where swimming, cooking and gathering happen in one fluid environment. The design gives every moment its own place without losing connection.',
+    scope: ['Pool & raised spa', 'Outdoor kitchen', 'Fire pit lounge', 'Landscape'],
+    gallery: Array.from({ length: 6 }, (_, i) => `/images/san-marcos-${i + 1}.webp`)
+  },
+  {
+    slug: 'coronado-oceanfront', name: 'Coronado Oceanfront', place: 'Coronado, California', type: 'Coastal Outdoor Living',
+    image: '/images/project-coronado.webp', detail: 'Elevated coastal outdoor design.',
+    story: 'An oceanfront setting refined for salt air, sunset dinners and effortless entertaining. Materials were selected to age beautifully while preserving the openness of the view.',
+    scope: ['Oceanfront terrace', 'Outdoor kitchen', 'Custom hardscape', 'Coastal planting'],
+    gallery: Array.from({ length: 6 }, (_, i) => `/images/coronado-${i + 1}.webp`)
+  },
+  {
+    slug: 'scripps-ranch-resort', name: 'Scripps Ranch Resort', place: 'Scripps Ranch, California', type: 'Family · Pool',
+    image: '/images/project-scripps.webp', detail: 'A resort-style family backyard with a custom waterslide.',
+    story: 'Playful enough for the kids and considered enough for the adults, this backyard turns family time into a permanent vacation without compromising its architectural character.',
+    scope: ['Resort pool', 'Custom waterslide', 'Spa', 'Family lounge'],
+    gallery: Array.from({ length: 6 }, (_, i) => `/images/scripps-${i + 1}.webp`)
+  },
+  {
+    slug: 'pacific-beach-oasis', name: 'Pacific Beach Oasis', place: 'Pacific Beach, California', type: 'Pool · Coastal Landscape',
+    image: '/images/pacific-1.webp', detail: 'A custom pool oasis designed for relaxed coastal living.',
+    story: 'A compact coastal property reimagined with confident geometry, layered greenery and a pool that makes every square foot feel generous.',
+    scope: ['Custom pool', 'Integrated spa', 'Privacy planting', 'Pool deck'],
+    gallery: Array.from({ length: 6 }, (_, i) => `/images/pacific-${i + 1}.webp`)
+  },
+  {
+    slug: 'la-mesa-luxury-retreat', name: 'La Mesa Luxury Retreat', place: 'La Mesa, California', type: 'Full Backyard Transformation',
+    image: '/images/la-mesa-1.webp', detail: 'A complete backyard transformation made for year-round life.',
+    story: 'This full-property remodel creates a seamless sequence from home to pool, shaded lounge and garden—designed for the inland climate and year-round gatherings.',
+    scope: ['Pool & spa', 'Covered lounge', 'Hardscape', 'Lighting design'],
+    gallery: Array.from({ length: 6 }, (_, i) => `/images/la-mesa-${i + 1}.webp`)
+  },
 ]
 
 const journal = [
@@ -99,6 +151,10 @@ const pageTitle = computed(() => ({
   journal: ['The journal', 'Ideas for life outside.'],
   contact: ['Start a conversation', 'Your backyard begins here.'],
 }[route.value]))
+const selectedProject = computed(() => {
+  if (!route.value.startsWith('project/')) return null
+  return projects.find(project => project.slug === route.value.split('/')[1]) || null
+})
 
 function go(page) {
   location.hash = `/${page}`
@@ -112,6 +168,24 @@ function onHash() {
 
 function nextProject(direction = 1) {
   currentProject.value = (currentProject.value + direction + projects.length) % projects.length
+}
+
+function openProject(project) {
+  activeGallery.value = 0
+  go(`project/${project.slug}`)
+}
+
+function nextGallery(direction = 1) {
+  if (!selectedProject.value) return
+  const total = selectedProject.value.gallery.length
+  activeGallery.value = (activeGallery.value + direction + total) % total
+}
+
+function onKeydown(event) {
+  if (!lightboxOpen.value) return
+  if (event.key === 'Escape') lightboxOpen.value = false
+  if (event.key === 'ArrowLeft') nextGallery(-1)
+  if (event.key === 'ArrowRight') nextGallery(1)
 }
 
 function submitForm() {
@@ -129,14 +203,18 @@ function onScroll() {
 }
 
 watch(inquiryOpen, value => document.body.classList.toggle('no-scroll', value))
+watch(lightboxOpen, value => document.body.classList.toggle('no-scroll', value))
+watch(route, () => { activeGallery.value = 0 })
 onMounted(() => {
   window.addEventListener('hashchange', onHash)
   window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('keydown', onKeydown)
   onScroll()
 })
 onUnmounted(() => {
   window.removeEventListener('hashchange', onHash)
   window.removeEventListener('scroll', onScroll)
+  window.removeEventListener('keydown', onKeydown)
 })
 </script>
 
@@ -329,7 +407,7 @@ onUnmounted(() => {
     </main>
 
     <main v-else class="inner-page">
-      <section class="page-hero">
+      <section v-if="!selectedProject" class="page-hero">
         <div class="section-kicker"><span>Everlasting</span> San Diego</div>
         <h1>{{ pageTitle?.[0] }}<br /><em>{{ pageTitle?.[1] }}</em></h1>
       </section>
@@ -337,10 +415,92 @@ onUnmounted(() => {
       <section v-if="route === 'projects'" class="projects-page section">
         <div class="filter-row"><span>All projects</span><span>Pool + spa</span><span>Outdoor living</span><span>Landscape</span></div>
         <div class="projects-grid">
-          <article v-for="(project, i) in projects" :key="project.name" :class="{ large: i === 0 || i === 3 }">
+          <article
+            v-for="(project, i) in projects"
+            :key="project.name"
+            :class="{ large: i === 0 || i === 3 }"
+            role="button"
+            tabindex="0"
+            @click="openProject(project)"
+            @keydown.enter="openProject(project)"
+          >
             <div><img :src="project.image" :alt="project.name" /><span>0{{ i + 1 }}</span></div>
-            <p>{{ project.type }}</p><h2>{{ project.name }}</h2><small>{{ project.place }}</small>
+            <p>{{ project.type }}</p><h2>{{ project.name }} <ArrowUpRight :size="20" /></h2><small>{{ project.place }}</small>
           </article>
+        </div>
+      </section>
+
+      <section v-if="selectedProject" class="project-detail">
+        <div class="project-detail-head">
+          <button class="back-link" @click="go('projects')"><ArrowLeft :size="16" /> All projects</button>
+          <div class="project-index">Case study · 0{{ projects.indexOf(selectedProject) + 1 }}</div>
+          <h1>{{ selectedProject.name }}</h1>
+          <div class="project-meta">
+            <span>{{ selectedProject.place }}</span>
+            <span>{{ selectedProject.type }}</span>
+          </div>
+        </div>
+
+        <div class="project-carousel">
+          <Transition name="gallery" mode="out-in">
+            <button :key="activeGallery" class="carousel-image" aria-label="Open fullscreen gallery" @click="lightboxOpen = true">
+              <img :src="selectedProject.gallery[activeGallery]" :alt="`${selectedProject.name}, image ${activeGallery + 1}`" />
+              <span><Plus :size="16" /> View fullscreen</span>
+            </button>
+          </Transition>
+          <div class="carousel-ui">
+            <div class="carousel-count">
+              <strong>0{{ activeGallery + 1 }}</strong>
+              <span>/ 0{{ selectedProject.gallery.length }}</span>
+            </div>
+            <div class="carousel-progress"><i :style="{ width: `${((activeGallery + 1) / selectedProject.gallery.length) * 100}%` }"></i></div>
+            <div class="carousel-arrows">
+              <button aria-label="Previous image" @click="nextGallery(-1)"><ArrowLeft /></button>
+              <button aria-label="Next image" @click="nextGallery(1)"><ArrowRight /></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-story section" v-reveal>
+          <div>
+            <div class="section-kicker"><span>01</span> The story</div>
+            <h2>Designed around<br /><em>the life within it.</em></h2>
+          </div>
+          <div>
+            <p class="lead">{{ selectedProject.detail }}</p>
+            <p>{{ selectedProject.story }}</p>
+          </div>
+          <div class="project-scope">
+            <span>Project scope</span>
+            <p v-for="item in selectedProject.scope" :key="item"><Check :size="13" /> {{ item }}</p>
+          </div>
+        </div>
+
+        <div class="gallery-rail-wrap">
+          <div class="rail-heading">
+            <div><span>Explore the space</span><h2>Every angle, <em>considered.</em></h2></div>
+            <p>Drag or tap to move through the project.</p>
+          </div>
+          <div class="gallery-rail">
+            <button
+              v-for="(image, i) in selectedProject.gallery"
+              :key="image"
+              :class="{ active: activeGallery === i }"
+              @click="activeGallery = i"
+            >
+              <img :src="image" :alt="`${selectedProject.name} view ${i + 1}`" />
+              <span>0{{ i + 1 }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="next-project">
+          <p>Continue exploring</p>
+          <button @click="openProject(projects[(projects.indexOf(selectedProject) + 1) % projects.length])">
+            <span>Next project</span>
+            <strong>{{ projects[(projects.indexOf(selectedProject) + 1) % projects.length].name }}</strong>
+            <ArrowRight />
+          </button>
         </div>
       </section>
 
@@ -443,6 +603,26 @@ onUnmounted(() => {
             <button class="button button--dark">Request my consultation <ArrowUpRight :size="17" /></button>
           </form>
           <div v-else class="success"><Check /><h3>Thank you.</h3><p>Your vision is in good hands. We’ll be in touch soon.</p></div>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition name="lightbox">
+      <div v-if="lightboxOpen && selectedProject" class="lightbox">
+        <div class="lightbox-top">
+          <span>{{ selectedProject.name }}</span>
+          <span>0{{ activeGallery + 1 }} / 0{{ selectedProject.gallery.length }}</span>
+          <button aria-label="Close gallery" @click="lightboxOpen = false"><X /></button>
+        </div>
+        <Transition name="gallery" mode="out-in">
+          <img :key="activeGallery" :src="selectedProject.gallery[activeGallery]" :alt="selectedProject.name" />
+        </Transition>
+        <button class="lightbox-prev" aria-label="Previous image" @click="nextGallery(-1)"><ArrowLeft /></button>
+        <button class="lightbox-next" aria-label="Next image" @click="nextGallery(1)"><ArrowRight /></button>
+        <div class="lightbox-strip">
+          <button v-for="(image, i) in selectedProject.gallery" :key="image" :class="{ active: activeGallery === i }" @click="activeGallery = i">
+            <img :src="image" alt="" />
+          </button>
         </div>
       </div>
     </Transition>
